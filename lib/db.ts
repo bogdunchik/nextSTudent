@@ -1,5 +1,7 @@
 import mysql from 'mysql2/promise';
-
+if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_PASSWORD || !process.env.DB_NAME) {
+  console.error('Отсутствуют переменные окружения для подключения к БД');
+}
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT) || 3306,
@@ -15,7 +17,7 @@ export async function initDb() {
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NOT NULL,
-    phone VARCHAR(30) NOT NULL,
+    phone VARCHAR(30) NOT NULL, 
     email VARCHAR(150) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     login_attempts INT DEFAULT 0,
@@ -44,5 +46,5 @@ export async function initDb() {
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
   )`);
 }
-
+module.exports = db;
 export default db;
