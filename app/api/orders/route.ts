@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import db from '../../../lib/db';
+import { supabase } from '../../../lib/supabaseClient';
 import { getSession } from '../../../lib/session';
 
 const products = [
@@ -36,23 +36,49 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, message: 'Вы ничего не заказали' }, { status: 400 });
       }
 
-      const [orderResult]: any = await db.query(
-        'INSERT INTO orders (user_id, address, payment_method, status) VALUES (?, ?, ?, ?)',
-        [session.userId, address, paymentMethod, 'new']
-      );
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([{
+          user_id: session.userId,
+          address,
+          payment_method: paymentMethod,
+          status: 'new',
+          comment: comment || ''
+        }])
+        .select('id')
+        .maybeSingle();
 
-      const orderId = orderResult.insertId;
+      if (orderError || !order) {
+        console.error('Ошибка Supabase при создании заказа:', orderError);
+        return NextResponse.json({ success: false, message: 'Ошибка создания заказа', details: orderError?.message }, { status: 400 });
+      }
+
+      const orderItemsToInsert = [];
 
       for (const item of items) {
-        const currentProduct = products.find((p) => p.id === item.productId);
+        const currentProduct = products.find((p) => p.id === Number(item.productId));
         if (!currentProduct) continue;
 
         const quantity = Math.min(50, Math.max(1, Number(item.quantity || 1)));
 
-        await db.query(
-          'INSERT INTO order_items (order_id, product_id, product_name, price, quantity) VALUES (?, ?, ?, ?, ?)',
-          [orderId, currentProduct.id, currentProduct.name, currentProduct.price, quantity]
-        );
+        orderItemsToInsert.push({
+          order_id: order.id,
+          product_id: currentProduct.id,
+          product_name: currentProduct.name,
+          price: currentProduct.price,
+          quantity: quantity
+        });
+      }
+
+      if (orderItemsToInsert.length > 0) {
+        const { error: itemsError } = await supabase
+          .from('order_items')
+          .insert(orderItemsToInsert);
+
+        if (itemsError) {
+          console.error('Ошибка Supabase при сохранении позиций заказа:', itemsError);
+          return NextResponse.json({ success: false, message: 'Ошибка сохранения позиций заказа', details: itemsError.message }, { status: 400 });
+        }
       }
 
       return NextResponse.json({ success: true });
@@ -62,14 +88,28 @@ export async function POST(req: Request) {
       if (!comment?.trim()) {
         return NextResponse.json({ success: false, message: 'Заполните текст предзаказа' }, { status: 400 });
       }
-      await db.query(
-        'INSERT INTO orders (user_id, address, payment_method, status, comment) VALUES (?, ?, ?, ?, ?)',
-        [session.userId, address, 'upon_receipt', 'preorder', comment]
-      );
+
+      const { error: preorderError } = await supabase
+        .from('orders')
+        .insert([{
+          user_id: session.userId,
+          address,
+          payment_method: 'upon_receipt',
+          status: 'preorder',
+          comment
+        }]);
+
+      if (preorderError) {
+        console.error('Ошибка Supabase при создании предзаказа:', preorderError);
+        return NextResponse.json({ success: false, message: 'Ошибка создания предзаказа', details: preorderError.message }, { status: 400 });
+      }
+
       return NextResponse.json({ success: true });
     }
+
     return NextResponse.json({ success: false, message: 'Неверный тип запроса' }, { status: 400 });
-  } catch (error) {
-    return NextResponse.json({ success: false, message: 'Внутренняя ошибка сервера' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Критическая ошибка в роутере заказов:', error);
+    return NextResponse.json({ success: false, message: 'Внутренняя ошибка сервера', error: error.message }, { status: 500 });
   }
 }

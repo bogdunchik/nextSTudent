@@ -67,12 +67,12 @@ export default function ReviewsSlider() {
 
   return (
     <div className='commentContainer'>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', opacity: animating ? 1 : 0, transition: 'opacity 0.25s' }}>
+      <div >
         <div className='review-header'>
           <img className='avatar' src={review.avatar} alt={review.name} />
           <div>
-            <p className='com-text' style={{ fontWeight: 'bold', margin: 0 }}>{review.name}</p>
-            <p className='com-text small' style={{ margin: 0 }}>{review.date}</p>
+            <p className='com-text'>{review.name}</p>
+            <p className='com-text small' >{review.date}</p>
           </div>
         </div>
         <div className='review-content-area'>

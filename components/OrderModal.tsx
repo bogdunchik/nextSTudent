@@ -61,8 +61,8 @@ export default function OrderModal({ isOpen, onClose, selectedProductId, product
     setItems(items.filter((_, i) => i !== index));
   };
 
-  async function handleOrderSubmit(e: FormEvent) {
-    e.preventDefault();
+  async function handleOrderSubmit(oneelement: FormEvent) {
+    oneelement.preventDefault();
     if (!isAgreed) return;
     setMsg(null);
 
@@ -99,8 +99,8 @@ export default function OrderModal({ isOpen, onClose, selectedProductId, product
     }
   }
 
-  async function handlePreorderSubmit(e: FormEvent) {
-    e.preventDefault();
+  async function handlePreorderSubmit(oneelement: FormEvent) {
+    oneelement.preventDefault();
     if (!isAgreed) return;
     setMsg(null);
 
@@ -164,7 +164,7 @@ export default function OrderModal({ isOpen, onClose, selectedProductId, product
                 <select
                   className="form-control"
                   value={item.productId}
-                  onChange={(e) => updateItem(index, { productId: Number(e.target.value) })}
+                  onChange={(oneelement) => updateItem(index, { productId: Number(oneelement.target.value) })}
                   required
                 >
                   {products.map((p) => (
@@ -174,7 +174,7 @@ export default function OrderModal({ isOpen, onClose, selectedProductId, product
                   ))}
                 </select>
 
-                <input type="number" className="form-control int" min={1} max={50} value={item.quantity} onChange={(e) => updateItem(index, { quantity: Math.min(50, Math.max(1, Number(e.target.value))) })} required />
+                <input type="number" className="form-control int" min={1} max={50} value={item.quantity} onChange={(oneelement) => updateItem(index, { quantity: Math.min(50, Math.max(1, Number(oneelement.target.value))) })} required />
 
                 <button
                   type="button"
@@ -192,19 +192,19 @@ export default function OrderModal({ isOpen, onClose, selectedProductId, product
 
             <div className="form-group">
               <label className="form-label">Способ оплаты</label>
-              <select className="form-control" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+              <select className="form-control" value={paymentMethod} onChange={(oneelement) => setPaymentMethod(oneelement.target.value)}>
                 <option value="card">Банковская карта</option>
                 <option value="money">Наличными при получении</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Адрес доставки </label>
-              <input type="text" className="form-control" value={address} onChange={(e) => setAddress(e.target.value)} required />
+              <label className="form-label">Адрес доставки (С вами свяжется оператор по поводу даты)</label>
+              <input type="text" className="form-control" value={address} onChange={(oneelement) => setAddress(oneelement.target.value)} required />
             </div>
 
             <div className="form-group" >
-              <input type="checkbox" id="order-consent" checked={isAgreed} onChange={(e) => setIsAgreed(e.target.checked)} required />
+              <input type="checkbox" id="order-consent" checked={isAgreed} onChange={(oneelement) => setIsAgreed(oneelement.target.checked)} required />
               <label className='footer-links'>
                 Я согласен с политикой конфиденциальности, пользовательским соглашением и даю разрешение на обработку персональных данных.
               </label>
@@ -219,8 +219,8 @@ export default function OrderModal({ isOpen, onClose, selectedProductId, product
         {activeTab === 'preorder' && (
           <form onSubmit={handlePreorderSubmit}>
             <div className="form-group">
-              <label className="form-label">Адрес доставки </label>
-              <input type="text" className="form-control" value={address} onChange={(e) => setAddress(e.target.value)} required />
+              <label className="form-label">Адрес доставки (С вами свяжется оператор по поводу даты)</label>
+              <input type="text" className="form-control" value={address} onChange={(oneelement) => setAddress(oneelement.target.value)} required />
             </div>
 
             <div className="form-group">
@@ -229,14 +229,14 @@ export default function OrderModal({ isOpen, onClose, selectedProductId, product
                 className="form-control"
                 rows={3}
                 value={comment}
-                onChange={(e) => setComment(e.target.value)}
+                onChange={(oneelement) => setComment(oneelement.target.value)}
                 placeholder="Опишите, какие позиции необходимы под заказ..."
                 required
               />
             </div>
 
             <div className="form-group">
-              <input type="checkbox" id="preorder-consent" checked={isAgreed} onChange={(e) => setIsAgreed(e.target.checked)} required />
+              <input type="checkbox" id="preorder-consent" checked={isAgreed} onChange={(oneelement) => setIsAgreed(oneelement.target.checked)} required />
               <label className='footer-links'>
                 Я согласен с политикой конфиденциальности, пользовательским соглашением и даю разрешение на обработку персональных данных.
               </label>

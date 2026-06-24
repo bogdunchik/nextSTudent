@@ -24,9 +24,38 @@ export default function AuthModal({ initialTab, onClose }: Props) {
   const [regPass2, setRegPass2] = useState('');
   const [regConsent, setRegConsent] = useState(false);
 
-  function validateEmail(e: string) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  function validateEmail(oneelement: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(oneelement);
   }
+  const formaPhone = (value: string) => {
+    const maxInt = value.replace(/\D/g, '');
+    if (!maxInt) return '';
+
+    let mainmaxInt = maxInt;
+    if (maxInt[0] === '7' || maxInt[0] === '8') {
+      mainmaxInt = maxInt.slice(1);
+    }
+    mainmaxInt = mainmaxInt.slice(0, 10);
+
+    let formatted = '+7';
+    if (mainmaxInt.length > 0) {
+      formatted += '(' + mainmaxInt.slice(0, 3);
+    }
+    if (mainmaxInt.length >= 3) {
+      formatted += ')';
+    }
+    if (mainmaxInt.length > 3) {
+      formatted += mainmaxInt.slice(3, 6);
+    }
+    if (mainmaxInt.length > 6) {
+      formatted += ' ' + mainmaxInt.slice(6, 8);
+    }
+    if (mainmaxInt.length > 8) {
+      formatted += ' ' + mainmaxInt.slice(8, 10);
+    }
+
+    return formatted;
+  };
 
   async function doLogin() {
     setMsg(null);
@@ -51,6 +80,12 @@ export default function AuthModal({ initialTab, onClose }: Props) {
     setMsg(null);
     if (!regEmail || !regPass || !regPass2) { setMsg({ text: 'Email и пароль обязательны', type: 'danger' }); return; }
     if (!validateEmail(regEmail)) { setMsg({ text: 'Некорректный email', type: 'danger' }); return; }
+    const digitsOnly = regPhone.replace(/\D/g, '');
+    if (digitsOnly.length !== 11) {
+      setMsg({ text: 'Введите номер телефона полностью', type: 'danger' });
+      return;
+    }
+
     if (regPass.length < 8) { setMsg({ text: 'Пароль — минимум 8 символов', type: 'danger' }); return; }
     if (regPass !== regPass2) { setMsg({ text: 'Пароли не совпадают', type: 'danger' }); return; }
     if (!regConsent) { setMsg({ text: 'Необходимо согласие на обработку персональных данных', type: 'danger' }); return; }
@@ -79,7 +114,7 @@ export default function AuthModal({ initialTab, onClose }: Props) {
   }
 
   return (
-    <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className="modal-backdrop" onClick={(oneelement) => { if (oneelement.target === oneelement.currentTarget) onClose(); }}>
       <div className="modal-box">
         <div className="modal-header">
           <h2>Аккаунт</h2>
@@ -97,47 +132,52 @@ export default function AuthModal({ initialTab, onClose }: Props) {
           <div>
             <div className="form-group">
               <label className="form-label">Email</label>
-              <input className="form-control" type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
+              <input className="form-control" type="email" value={loginEmail} onChange={(oneelement) => setLoginEmail(oneelement.target.value)} />
             </div>
             <div className="form-group">
               <label className="form-label">Пароль</label>
-              <input className="form-control" type="password" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} />
+              <input className="form-control" type="password" value={loginPass} onChange={(oneelement) => setLoginPass(oneelement.target.value)} />
             </div>
             <button className="btn btn-primary" style={{ width: '100%' }} onClick={doLogin}>Войти</button>
           </div>
         )}
-
         {tab === 'register' && (
           <div>
             <div className="form-row form-group">
               <div>
                 <label className="form-label">Имя</label>
-                <input className="form-control" type="text" value={regName} onChange={(e) => setRegName(e.target.value)} />
+                <input className="form-control" type="text" value={regName} onChange={(oneelement) => setRegName(oneelement.target.value)} />
               </div>
               <div>
                 <label className="form-label">Фамилия</label>
-                <input className="form-control" type="text" value={regSurname} onChange={(e) => setRegSurname(e.target.value)} />
+                <input className="form-control" type="text" value={regSurname} onChange={(oneelement) => setRegSurname(oneelement.target.value)} />
               </div>
             </div>
             <div className="form-group">
               <label className="form-label">Телефон</label>
-              <input className="form-control" type="tel" value={regPhone} onChange={(e) => setRegPhone(e.target.value)} />
+              <input
+                className="form-control"
+                type="tel"
+                placeholder="+7(999)999 99 99"
+                value={regPhone}
+                onChange={(oneelement) => setRegPhone(formaPhone(oneelement.target.value))}
+              />
             </div>
             <div className="form-group">
               <label className="form-label">Email</label>
-              <input className="form-control" type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} />
+              <input className="form-control" type="email" value={regEmail} onChange={(oneelement) => setRegEmail(oneelement.target.value)} />
             </div>
             <div className="form-group">
-              <label className="form-label">Пароль (мин. 8 символов)</label>
-              <input className="form-control" type="password" value={regPass} onChange={(e) => setRegPass(e.target.value)} />
+              <label className="form-label">Пароль (минимум 8 символов)</label>
+              <input className="form-control" type="password" value={regPass} onChange={(oneelement) => setRegPass(oneelement.target.value)} />
             </div>
             <div className="form-group">
               <label className="form-label">Повторите пароль</label>
-              <input className="form-control" type="password" value={regPass2} onChange={(e) => setRegPass2(e.target.value)} />
+              <input className="form-control" type="password" value={regPass2} onChange={(oneelement) => setRegPass2(oneelement.target.value)} />
             </div>
             <div className="form-group">
               <label>
-                <input type="checkbox" checked={regConsent} onChange={(e) => setRegConsent(e.target.checked)} />
+                <input type="checkbox" checked={regConsent} onChange={(oneelement) => setRegConsent(oneelement.target.checked)} />
                 Я согласен с политикой конфиденциальности, пользовательским соглашением и даю разрешение на обработку персональных данных.
               </label>
             </div>

@@ -410,7 +410,7 @@ h3 {
 }
 
 .footer-links a:hover {
-  color: #0d6efd;
+  color: #98c1ff;
 }
 
 .btn {
@@ -432,7 +432,7 @@ h3 {
 }
 
 .btn-primary:hover {
-  background: #0b5ed7;
+  background: #4f95ff;
   border-color: #0b5ed7;
 }
 
@@ -574,7 +574,6 @@ h3 {
 
 .tab-btn.active {
   color: #0d6efd;
-  border-bottom-color: #0d6efd;
 }
 
 .page-title {

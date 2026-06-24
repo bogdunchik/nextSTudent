@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
-import db, { initDb } from '../../../lib/db';
+import { supabase } from '../../../lib/supabaseClient';
 
 export async function GET() {
-  await initDb();
-  const [rows] = await db.query('SELECT id, name, description, price FROM products ORDER BY id');
+  const { data: rows, error } = await supabase
+    .from('products')
+    .select('id, name, description, price')
+    .order('id', { ascending: true });
+
+  if (error) {
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({ success: true, products: rows });
 }

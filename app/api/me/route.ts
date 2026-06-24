@@ -1,14 +1,20 @@
 import { NextResponse } from 'next/server';
-import db from '../../../lib/db';
+import { supabase } from '../../../lib/supabaseClient';
 import { getSession } from '../../../lib/session';
 
 export async function GET() {
   try {
     const session = await getSession();
     if (!session) return NextResponse.json({ success: false }, { status: 401 });
-    const [rows]: any = await db.query('SELECT id, name, email FROM users WHERE id=?', [session.userId]);
-    if (!rows.length) return NextResponse.json({ success: false }, { status: 401 });
-    return NextResponse.json({ success: true, user: rows[0] });
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, name, email')
+      .eq('id', session.userId)
+      .maybeSingle();
+
+    if (error || !user) return NextResponse.json({ success: false }, { status: 401 });
+    return NextResponse.json({ success: true, user });
 
   } catch (error: any) {
     console.error('Ошибка в роутере ми:', error);
