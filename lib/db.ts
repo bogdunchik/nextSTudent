@@ -11,7 +11,8 @@ const db = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   ssl: {
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    ciphers: 'DEFAULT'
   }
 });
 
