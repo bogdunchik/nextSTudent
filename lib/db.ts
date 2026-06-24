@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import mysql from 'mysql';
 if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_PASSWORD || !process.env.DB_NAME) {
   console.error('Отсутствуют переменные окружения для подключения к БД');
 }
@@ -10,7 +10,10 @@ const db = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  ssl: "" as any,
+  ssl: {
+    rejectUnauthorized: false,
+    ciphers: 'DEFAULT'
+  }
 });
 
 export async function initDb() {
