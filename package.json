@@ -12,6 +12,7 @@
     "bcrypt": "^6.0.0",
     "express-rate-limit": "^8.5.2",
     "mysql": "^2.18.1",
+    "mysql2": "^3.22.5",
     "next": "16.2.7",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -20,7 +21,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
     "@types/mysql": "^2.15.27",
-    "@types/node": "^20",
+    "@types/node": "^20.19.43",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
