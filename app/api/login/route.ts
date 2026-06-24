@@ -88,6 +88,10 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Ошибка в роутере авторизации:', error);
-    return NextResponse.json({ success: false, message: 'Внутренняя ошибка сервера' }, { status: 500 });
+    return NextResponse.json({
+      success: false,
+      message: error.message || 'Неизвестная ошибка',
+      stack: error.stack
+    }, { status: 500 });
   }
 }
